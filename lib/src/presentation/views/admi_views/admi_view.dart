@@ -21,6 +21,8 @@ class AdminView extends StatelessWidget {
           NuevoAnuncioSection(),
           SizedBox(height: 10),
           NuevoBeneficioSection(),
+          SizedBox(height: 10),
+          GestionCuotaSection(),
         ],
       ),
     );

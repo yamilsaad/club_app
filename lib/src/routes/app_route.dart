@@ -29,5 +29,9 @@ class AppRoute {
     GetPage(name: '/register', page: () => RegisterScreen()),
     GetPage(name: '/home', page: () => const HomeScreen()),
     GetPage(name: '/socio-detalle', page: () => SocioDetalleScreen()),
+    GetPage(
+      name: '/configuracion-cuenta',
+      page: () => ConfiguracionCuotaScreen(),
+    ),
   ];
 }

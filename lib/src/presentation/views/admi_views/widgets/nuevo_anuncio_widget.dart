@@ -6,6 +6,7 @@ class NuevoAnuncioSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
     return Card(
       elevation: 4.0,
       margin: const EdgeInsets.symmetric(vertical: 2.5),
@@ -30,7 +31,7 @@ class NuevoAnuncioSection extends StatelessWidget {
                   ],
                   onChanged: (value) {},
                 ),
-                const SizedBox(height: 10),
+                SizedBox(height: screenHeight * 0.02),
                 ElevatedButton(
                   onPressed: () {},
                   child: const Text("Guardar Anuncio"),

@@ -55,9 +55,7 @@ class CardSocioWidget extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 8.0),
-                Text(
-                  'Número de Socio: ${socio.rol}',
-                ), //TODO!NO SE ESTÁ REGISTRANDO EL NUMERO DE SOCIO
+                Text('Número de Socio: ${socio.numeroSocio}'),
                 Text('DNI: ${socio.dni}'),
                 Text('Email: ${socio.email}'),
                 Text('Teléfono: ${socio.telefono}'),
