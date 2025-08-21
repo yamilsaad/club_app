@@ -69,6 +69,7 @@ class AuthController extends GetxController {
 
       String uid = cred.user!.uid;
 
+      // 🚀 Nuevo: agregamos numeroSocio y estado_socio
       SocioModel newSocio = SocioModel(
         idUsuario: uid,
         nombre: nombre,
@@ -79,6 +80,9 @@ class AuthController extends GetxController {
         direccion: domicilio,
         rol: rol,
         fechaCreacion: DateTime.now(),
+        numeroSocio: numeroSocio, // <-- NUEVO
+        estadoSocio: true, // <-- NUEVO, por defecto activo
+        oficio: oficio, // <-- no olvidemos oficio
       );
 
       await _firestore.collection("usuarios").doc(uid).set(newSocio.toMap());

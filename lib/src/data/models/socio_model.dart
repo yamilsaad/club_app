@@ -10,6 +10,9 @@ class SocioModel {
   String direccion;
   String rol; // "admin" o "socio"
   DateTime fechaCreacion;
+  final String numeroSocio; // nuevo
+  final bool estadoSocio; // nuevo
+  final String oficio; // nuevo
 
   SocioModel({
     this.idUsuario,
@@ -20,6 +23,9 @@ class SocioModel {
     required this.telefono,
     required this.direccion,
     required this.rol,
+    required this.numeroSocio,
+    required this.estadoSocio,
+    required this.oficio,
     DateTime? fechaCreacion,
   }) : fechaCreacion = fechaCreacion ?? DateTime.now();
 
@@ -34,6 +40,9 @@ class SocioModel {
       telefono: map['telefono'] ?? '',
       direccion: map['direccion'] ?? '',
       rol: map['rol'] ?? 'socio',
+      numeroSocio: map["numeroSocio"] ?? "",
+      estadoSocio: map["estado_socio"] ?? true,
+      oficio: map["oficio"] ?? "",
       fechaCreacion: (map['fechaCreacion'] as Timestamp).toDate(),
     );
   }
@@ -49,6 +58,9 @@ class SocioModel {
       'telefono': telefono,
       'direccion': direccion,
       'rol': rol,
+      "numeroSocio": numeroSocio,
+      "estado_socio": estadoSocio,
+      "oficio": oficio,
       'fechaCreacion': fechaCreacion,
     };
   }
