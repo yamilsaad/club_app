@@ -1,6 +1,8 @@
 import 'package:get/get.dart';
 //Importación de archivos necesarios
 import '../presentation/screens/screen.dart';
+import '../presentation/screens/mis_pagos_screen/mis_pagos_screen.dart';
+import '../presentation/screens/admin_dashboard_screen/admin_dashboard_screen.dart';
 
 class AppRoute {
   /* static Future<bool> _seenOnboarding() async {
@@ -33,5 +35,7 @@ class AppRoute {
       name: '/configuracion-cuenta',
       page: () => ConfiguracionCuotaScreen(),
     ),
+    GetPage(name: '/mis-pagos', page: () => const MisPagosScreen()),
+    GetPage(name: '/admin-dashboard', page: () => const AdminDashboardScreen()),
   ];
 }

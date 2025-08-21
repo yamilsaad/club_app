@@ -1,3 +1,5 @@
+// ignore_for_file: unnecessary_brace_in_string_interps
+
 class PagoCuotaSocio {
   final String id;
   final String socioId; // ID del socio que pago

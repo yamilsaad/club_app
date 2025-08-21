@@ -179,7 +179,12 @@ class PagoCuotaController extends GetxController {
   /// Obtener pagos por socio
   /// ===========================
   List<PagoCuotaSocio> getPagosPorSocio(String socioId) {
-    return pagos.where((pago) => pago.socioId == socioId).toList();
+    try {
+      return pagos.where((pago) => pago.socioId == socioId).toList();
+    } catch (e) {
+      print("Error en getPagosPorSocio: $e");
+      return [];
+    }
   }
 
   /// ===========================
@@ -190,106 +195,198 @@ class PagoCuotaController extends GetxController {
   }
 
   /// ===========================
-  /// Obtener estado de pagos de un socio
+  /// Obtener estado de pagos de un socio especifico
   /// ===========================
   Map<String, dynamic> getEstadoPagosSocio(String socioId) {
-    final pagosSocio = getPagosPorSocio(socioId);
-    final socio = socios.firstWhere((s) => s.idUsuario == socioId);
+    try {
+      // Buscar el socio de forma segura
+      final socio = socios.firstWhere((s) => s.idUsuario == socioId);
 
-    // Obtener todas las cuotas del anio actual
-    final anioActual = DateTime.now().year;
-    final cuotasAnio = cuotas.where((c) => c.mes <= 12).toList();
+      // Obtener pagos del socio
+      final pagosSocio = pagos.where((p) => p.socioId == socioId).toList();
 
-    // Calcular estadisticas
-    int totalCuotas = cuotasAnio.length;
-    int cuotasPagadas = pagosSocio.where((p) => p.anio == anioActual).length;
-    int cuotasPendientes = totalCuotas - cuotasPagadas;
+      final anioActual = DateTime.now().year;
+      final cuotasAnio = cuotas.where((c) => c.mes <= 12).toList();
 
-    // Calcular montos
-    double totalPagado = pagosSocio
-        .where((p) => p.anio == anioActual)
-        .fold(0.0, (sum, pago) => sum + pago.montoPagado);
+      // Calcular estadisticas
+      int totalCuotas = cuotasAnio.length;
+      int cuotasPagadas = pagosSocio.where((p) => p.anio == anioActual).length;
+      int cuotasPendientes = totalCuotas - cuotasPagadas;
 
-    double totalDebido = cuotasAnio.fold(
-      0.0,
-      (sum, cuota) => sum + cuota.monto,
-    );
-    double montoPendiente = totalDebido - totalPagado;
+      // Calcular montos
+      double totalPagado = pagosSocio
+          .where((p) => p.anio == anioActual)
+          .fold(0.0, (sum, pago) => sum + pago.montoPagado);
 
-    return {
-      "socio": socio,
-      "totalCuotas": totalCuotas,
-      "cuotasPagadas": cuotasPagadas,
-      "cuotasPendientes": cuotasPendientes,
-      "totalPagado": totalPagado,
-      "totalDebido": totalDebido,
-      "montoPendiente": montoPendiente,
-      "porcentajePago": totalDebido > 0 ? (totalPagado / totalDebido * 100) : 0,
-    };
+      double totalDebido = cuotasAnio.fold(
+        0.0,
+        (sum, cuota) => sum + cuota.monto,
+      );
+      double montoPendiente = totalDebido - totalPagado;
+
+      return {
+        "socio": socio,
+        "totalCuotas": totalCuotas,
+        "cuotasPagadas": cuotasPagadas,
+        "cuotasPendientes": cuotasPendientes,
+        "totalPagado": totalPagado,
+        "totalDebido": totalDebido,
+        "montoPendiente": montoPendiente,
+        "porcentajePago":
+            totalDebido > 0 ? (totalPagado / totalDebido * 100) : 0,
+      };
+    } catch (e) {
+      // Si no se encuentra el socio, retornar valores por defecto
+      print("Error en getEstadoPagosSocio: $e");
+      return {
+        "socio": null,
+        "totalCuotas": 0,
+        "cuotasPagadas": 0,
+        "cuotasPendientes": 0,
+        "totalPagado": 0.0,
+        "totalDebido": 0.0,
+        "montoPendiente": 0.0,
+        "porcentajePago": 0.0,
+      };
+    }
   }
 
   /// ===========================
   /// Obtener socios morosos (con cuotas vencidas)
   /// ===========================
   List<Map<String, dynamic>> getSociosMorosos() {
-    final anioActual = DateTime.now().year;
-    // ignore: unused_local_variable
-    final mesActual = DateTime.now().month;
-    final ahora = DateTime.now();
+    try {
+      // Verificar que los datos estén disponibles
+      if (socios.isEmpty || cuotas.isEmpty) {
+        return [];
+      }
 
-    List<Map<String, dynamic>> sociosMorosos = [];
+      final anioActual = DateTime.now().year;
+      final ahora = DateTime.now();
 
-    for (final socio in socios) {
-      final estado = getEstadoPagosSocio(socio.idUsuario!);
-      final cuotasPendientes = estado["cuotasPendientes"] as int;
+      List<Map<String, dynamic>> sociosMorosos = [];
 
-      if (cuotasPendientes > 0) {
-        // Verificar si tiene cuotas vencidas
-        final cuotasVencidas =
-            cuotas.where((c) {
-              final pago =
-                  pagos
-                      .where(
-                        (p) =>
-                            p.socioId == socio.idUsuario &&
-                            p.mes == c.mes &&
-                            p.anio == anioActual,
-                      )
-                      .toList();
+      for (final socio in socios) {
+        try {
+          // Verificar que el socio tenga ID válido
+          if (socio.idUsuario == null || socio.idUsuario!.isEmpty) {
+            continue; // Saltar socios sin ID válido
+          }
 
-              return pago.isEmpty && c.fechaVencimiento.isBefore(ahora);
-            }).toList();
+          final estado = getEstadoPagosSocio(socio.idUsuario!);
+          final cuotasPendientes = estado["cuotasPendientes"] as int;
 
-        if (cuotasVencidas.isNotEmpty) {
-          sociosMorosos.add({
-            "socio": socio,
-            "estado": estado,
-            "cuotasVencidas": cuotasVencidas,
-            "diasVencimiento": cuotasVencidas
-                .map((c) => ahora.difference(c.fechaVencimiento).inDays)
-                .reduce((a, b) => a > b ? a : b),
-          });
+          if (cuotasPendientes > 0) {
+            // Verificar si tiene cuotas vencidas
+            final cuotasVencidas =
+                cuotas.where((c) {
+                  final pago =
+                      pagos
+                          .where(
+                            (p) =>
+                                p.socioId == socio.idUsuario &&
+                                p.mes == c.mes &&
+                                p.anio == anioActual,
+                          )
+                          .toList();
+
+                  return pago.isEmpty && c.fechaVencimiento.isBefore(ahora);
+                }).toList();
+
+            if (cuotasVencidas.isNotEmpty) {
+              // Calcular días de vencimiento de forma segura
+              int diasVencimiento = 0;
+              try {
+                diasVencimiento = cuotasVencidas
+                    .map((c) => ahora.difference(c.fechaVencimiento).inDays)
+                    .reduce((a, b) => a > b ? a : b);
+              } catch (e) {
+                print("Error calculando días de vencimiento: $e");
+                diasVencimiento = 0;
+              }
+
+              sociosMorosos.add({
+                "socio": socio,
+                "estado": estado,
+                "cuotasVencidas": cuotasVencidas,
+                "diasVencimiento": diasVencimiento,
+              });
+            }
+          }
+        } catch (e) {
+          print("Error procesando socio ${socio.idUsuario}: $e");
+          continue; // Continuar con el siguiente socio
         }
       }
+
+      // Ordenar por días de vencimiento (más vencidos primero)
+      try {
+        sociosMorosos.sort(
+          (a, b) => (b["diasVencimiento"] as int).compareTo(
+            a["diasVencimiento"] as int,
+          ),
+        );
+      } catch (e) {
+        print("Error ordenando socios morosos: $e");
+      }
+
+      return sociosMorosos;
+    } catch (e) {
+      print("Error en getSociosMorosos: $e");
+      return [];
     }
-
-    // Ordenar por dias de vencimiento (mas vencidos primero)
-    sociosMorosos.sort(
-      (a, b) =>
-          (b["diasVencimiento"] as int).compareTo(a["diasVencimiento"] as int),
-    );
-
-    return sociosMorosos;
   }
 
   /// ===========================
   /// Generar reporte de pagos del mes
   /// ===========================
   Map<String, dynamic> getReportePagosMes(int mes, int anio) {
-    final pagosMes = getPagosPorMes(mes, anio);
-    final cuotaMes = getCuotaPorMes(mes, anio);
+    try {
+      final pagosMes = getPagosPorMes(mes, anio);
+      final cuotaMes = getCuotaPorMes(mes, anio);
 
-    if (cuotaMes == null) {
+      if (cuotaMes == null) {
+        return {
+          "mes": mes,
+          "anio": anio,
+          "totalSocios": socios.length,
+          "sociosPagaron": pagosMes.length,
+          "sociosPendientes": socios.length - pagosMes.length,
+          "totalRecaudado": pagosMes.fold(
+            0.0,
+            (sum, pago) => sum + pago.montoPagado,
+          ),
+          "totalEsperado": 0.0, // No hay cuota configurada
+          "porcentajeRecaudacion": 0.0,
+          "cuota": null,
+        };
+      }
+
+      final totalSocios = socios.length;
+      final sociosPagaron = pagosMes.length;
+      final sociosPendientes = totalSocios - sociosPagaron;
+      final totalRecaudado = pagosMes.fold(
+        0.0,
+        (sum, pago) => sum + pago.montoPagado,
+      );
+      final totalEsperado = totalSocios * cuotaMes.monto;
+      final porcentajeRecaudacion =
+          totalEsperado > 0 ? (totalRecaudado / totalEsperado * 100) : 0;
+
+      return {
+        "mes": mes,
+        "anio": anio,
+        "totalSocios": totalSocios,
+        "sociosPagaron": sociosPagaron,
+        "sociosPendientes": sociosPendientes,
+        "totalRecaudado": totalRecaudado,
+        "totalEsperado": totalEsperado,
+        "porcentajeRecaudacion": porcentajeRecaudacion,
+        "cuota": cuotaMes,
+      };
+    } catch (e) {
+      print("Error en getReportePagosMes: $e");
+      // Retornar reporte por defecto en caso de error
       return {
         "mes": mes,
         "anio": anio,
@@ -299,30 +396,8 @@ class PagoCuotaController extends GetxController {
         "totalRecaudado": 0.0,
         "totalEsperado": 0.0,
         "porcentajeRecaudacion": 0.0,
+        "cuota": null,
       };
     }
-
-    final totalSocios = socios.length;
-    final sociosPagaron = pagosMes.length;
-    final sociosPendientes = totalSocios - sociosPagaron;
-    final totalRecaudado = pagosMes.fold(
-      0.0,
-      (sum, pago) => sum + pago.montoPagado,
-    );
-    final totalEsperado = totalSocios * cuotaMes.monto;
-    final porcentajeRecaudacion =
-        totalEsperado > 0 ? (totalRecaudado / totalEsperado * 100) : 0;
-
-    return {
-      "mes": mes,
-      "anio": anio,
-      "totalSocios": totalSocios,
-      "sociosPagaron": sociosPagaron,
-      "sociosPendientes": sociosPendientes,
-      "totalRecaudado": totalRecaudado,
-      "totalEsperado": totalEsperado,
-      "porcentajeRecaudacion": porcentajeRecaudacion,
-      "cuota": cuotaMes,
-    };
   }
 }

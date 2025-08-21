@@ -45,6 +45,9 @@ class InicioView extends StatelessWidget {
               TitleCard3(screenWidth: screenWidth),
               CuotasSocioWidget(),
               SizedBox(height: screenHeight * 0.02),
+              TitleCard4(screenWidth: screenWidth),
+              MisPagosCard(),
+              SizedBox(height: screenHeight * 0.02),
             ],
           ),
         ),
@@ -117,6 +120,31 @@ class TitleCard3 extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(left: 25.0),
           child: Text(
+            "Mis Cuotas",
+            style: TextStyle(
+              fontSize: screenWidth * 0.05,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class TitleCard4 extends StatelessWidget {
+  const TitleCard4({super.key, required this.screenWidth});
+
+  final double screenWidth;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(left: 25.0),
+          child: Text(
             "Mis Pagos de Cuotas",
             style: TextStyle(
               fontSize: screenWidth * 0.05,
@@ -125,6 +153,76 @@ class TitleCard3 extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class MisPagosCard extends StatelessWidget {
+  const MisPagosCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 4,
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: InkWell(
+        onTap: () {
+          Get.toNamed('/mis-pagos');
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [Colors.indigo.shade100, Colors.indigo.shade50],
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.indigo.shade200,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(
+                  Icons.payment,
+                  size: 32,
+                  color: Colors.indigo.shade700,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      "Ver Estado de Mis Pagos",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.indigo,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "Consulta tu historial de pagos, cuotas pendientes y estado de cuenta",
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.indigo.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(Icons.arrow_forward_ios, color: Colors.indigo.shade400),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
