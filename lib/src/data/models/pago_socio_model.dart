@@ -1,34 +1,3 @@
-class CuotaConfig {
-  final String id;
-  final double montoMensual;
-  final DateTime fechaVencimiento;
-  final String? notas;
-
-  CuotaConfig({
-    required this.id,
-    required this.montoMensual,
-    required this.fechaVencimiento,
-    this.notas,
-  });
-
-  Map<String, dynamic> toJson() {
-    return {
-      "montoMensual": montoMensual,
-      "fechaVencimiento": fechaVencimiento.toIso8601String(),
-      "notas": notas,
-    };
-  }
-
-  factory CuotaConfig.fromJson(Map<String, dynamic> json, String id) {
-    return CuotaConfig(
-      id: id,
-      montoMensual: (json["montoMensual"] ?? 0).toDouble(),
-      fechaVencimiento: DateTime.parse(json["fechaVencimiento"]),
-      notas: json["notas"],
-    );
-  }
-}
-
 class PagoSocio {
   final String id;
   final String socioId;

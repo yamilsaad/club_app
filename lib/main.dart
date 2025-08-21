@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 //Importación de archivos firebase
 import 'package:socio_app/firebase_options.dart';
@@ -30,6 +31,20 @@ class MyApp extends StatelessWidget {
       getPages: AppRoute.routes,
       initialBinding: AppBinding(),
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+
+      // Configuración de localizaciones
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        const Locale('es', 'ES'), // Español de España
+        const Locale('es', 'MX'), // Español de México
+        const Locale('es', 'AR'), // Español de Argentina
+        const Locale('en', 'US'), // Inglés como respaldo
+      ],
+      locale: const Locale('es', 'ES'), // Idioma por defecto
     );
   }
 }
