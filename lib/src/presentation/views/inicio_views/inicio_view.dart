@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:socio_app/src/config/themes/app_theme.dart';
 //Importación de archivos necesarios
 import 'widgets/widget.dart';
 import 'package:socio_app/src/presentation/screens/auth_screen/controllers/auth_controller.dart';
@@ -14,212 +15,267 @@ class InicioView extends StatelessWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     // Obtener el controlador de autenticación
     final AuthController authController = Get.find();
+
     return Scaffold(
-      appBar: AppBar(
-        title: Obx(() {
-          final user = authController.currentUser.value;
-          return Text("Hola, ${user?.nombre ?? 'Socio'}");
-        }),
-        actions: [
-          IconButton(
-            icon: const FaIcon(FontAwesomeIcons.bell),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.02),
-          scrollDirection: Axis.vertical,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              SizedBox(height: screenHeight * 0.02),
-              TitleCard(screenWidth: screenWidth),
-              SizedBox(height: screenHeight * 0.02),
-              CardSocioWidget(),
-              SizedBox(height: screenHeight * 0.02),
-              TitleCard2(screenWidth: screenWidth),
-              CardAnuncioWidget(),
-              SizedBox(height: screenHeight * 0.02),
-              TitleCard3(screenWidth: screenWidth),
-              CuotasSocioWidget(),
-              SizedBox(height: screenHeight * 0.02),
-              TitleCard4(screenWidth: screenWidth),
-              MisPagosCard(),
-              SizedBox(height: screenHeight * 0.02),
-            ],
-          ),
-        ),
-      ),
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: _buildAppBar(authController),
+      body: _buildBody(screenHeight, screenWidth),
       drawer: DrawerWidget(),
     );
   }
-}
 
-class TitleCard extends StatelessWidget {
-  const TitleCard({super.key, required this.screenWidth});
-
-  final double screenWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 25.0),
-          child: Text(
-            "Mi Tarjeta de Socio",
-            style: TextStyle(
-              fontSize: screenWidth * 0.05,
-              fontWeight: FontWeight.bold,
+  PreferredSizeWidget _buildAppBar(AuthController authController) {
+    return AppBar(
+      backgroundColor: Colors.transparent,
+      elevation: 0,
+      title: Obx(() {
+        final user = authController.currentUser.value;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Hola, ${user?.nombre ?? 'Socio'}",
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: AppTheme.textPrimaryColor,
+              ),
             ),
+            Text(
+              "¡Bienvenido de vuelta!",
+              style: TextStyle(
+                fontSize: 14,
+                color: AppTheme.textSecondaryColor,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+          ],
+        );
+      }),
+      actions: [
+        Container(
+          margin: const EdgeInsets.only(right: 16),
+          child: Stack(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.surfaceColor,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: AppTheme.cardShadow,
+                ),
+                child: const FaIcon(
+                  FontAwesomeIcons.bell,
+                  color: AppTheme.primaryColor,
+                  size: 20,
+                ),
+              ),
+              // Indicador de notificaciones
+              Positioned(
+                right: 0,
+                top: 0,
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.errorColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ],
     );
   }
-}
 
-class TitleCard2 extends StatelessWidget {
-  const TitleCard2({super.key, required this.screenWidth});
+  Widget _buildBody(double screenHeight, double screenWidth) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: screenHeight * 0.02),
 
-  final double screenWidth;
+            // Tarjeta de bienvenida
+            _buildWelcomeCard(),
 
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 25.0),
-          child: Text(
-            "Anuncio Importantes",
-            style: TextStyle(
-              fontSize: screenWidth * 0.05,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
+            SizedBox(height: screenHeight * 0.02),
+
+            // Sección: Mi Tarjeta de Socio
+            _buildSectionTitle("Mi Tarjeta de Socio", Icons.credit_card),
+            const SizedBox(height: 16),
+            CardSocioWidget(),
+
+            const SizedBox(height: 24),
+
+            // Sección: Anuncios Importantes
+            _buildSectionTitle("Anuncios Importantes", Icons.announcement),
+            const SizedBox(height: 16),
+            CardAnuncioWidget(),
+
+            const SizedBox(height: 24),
+
+            // Sección: Mis Cuotas
+            _buildSectionTitle("Mis Cuotas", Icons.receipt_long),
+            const SizedBox(height: 16),
+            CuotasSocioWidget(),
+
+            const SizedBox(height: 24),
+
+            // Sección: Mis Pagos
+            _buildSectionTitle("Mis Pagos de Cuotas", Icons.payment),
+            const SizedBox(height: 16),
+            _buildPagosCard(),
+
+            const SizedBox(height: 32),
+          ],
         ),
-      ],
+      ),
     );
   }
-}
 
-class TitleCard3 extends StatelessWidget {
-  const TitleCard3({super.key, required this.screenWidth});
-
-  final double screenWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 25.0),
-          child: Text(
-            "Mis Cuotas",
-            style: TextStyle(
-              fontSize: screenWidth * 0.05,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class TitleCard4 extends StatelessWidget {
-  const TitleCard4({super.key, required this.screenWidth});
-
-  final double screenWidth;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 25.0),
-          child: Text(
-            "Mis Pagos de Cuotas",
-            style: TextStyle(
-              fontSize: screenWidth * 0.05,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class MisPagosCard extends StatelessWidget {
-  const MisPagosCard({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: InkWell(
-        onTap: () {
-          Get.toNamed('/mis-pagos');
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [Colors.indigo.shade100, Colors.indigo.shade50],
-            ),
-          ),
-          child: Row(
+  Widget _buildWelcomeCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(24),
+      decoration: BoxDecoration(
+        gradient: AppTheme.primaryGradient,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: AppTheme.elevatedShadow,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.indigo.shade200,
+                  color: Colors.white.withOpacity(0.2),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(
-                  Icons.payment,
-                  size: 32,
-                  color: Colors.indigo.shade700,
+                child: const Icon(
+                  Icons.celebration,
+                  color: Colors.white,
+                  size: 24,
                 ),
               ),
               const SizedBox(width: 16),
-              Expanded(
+              const Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      "Ver Estado de Mis Pagos",
+                    Text(
+                      "¡Bienvenido a tu espacio!",
                       style: TextStyle(
+                        color: Colors.white,
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
-                        color: Colors.indigo,
                       ),
                     ),
-                    const SizedBox(height: 8),
+                    SizedBox(height: 4),
                     Text(
-                      "Consulta tu historial de pagos, cuotas pendientes y estado de cuenta",
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.indigo.shade600,
-                      ),
+                      "Gestiona tu membresía y mantente al día",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ],
                 ),
               ),
-              Icon(Icons.arrow_forward_ios, color: Colors.indigo.shade400),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSectionTitle(String title, IconData icon) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryColor.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: AppTheme.primaryColor, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Text(
+          title,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.textPrimaryColor,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPagosCard() {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceColor,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: AppTheme.cardShadow,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Get.toNamed('/mis-pagos');
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    gradient: AppTheme.accentGradient,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.payment,
+                    size: 24,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Ver Estado de Mis Pagos",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        "Consulta tu historial de pagos y cuotas pendientes",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.textSecondaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: AppTheme.primaryColor,
+                  size: 16,
+                ),
+              ],
+            ),
           ),
         ),
       ),

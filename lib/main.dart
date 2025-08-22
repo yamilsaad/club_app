@@ -8,6 +8,8 @@ import 'package:socio_app/firebase_options.dart';
 import 'package:socio_app/src/data/bindings/app_binding.dart';
 //Importaciónde de rutas
 import 'src/routes/app_route.dart';
+//Importación del tema personalizado
+import 'src/config/themes/app_theme.dart';
 
 void main() async {
   //WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +32,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/login',
       getPages: AppRoute.routes,
       initialBinding: AppBinding(),
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.indigo),
+      theme: AppTheme.lightTheme,
 
       // Configuración de localizaciones
       localizationsDelegates: [

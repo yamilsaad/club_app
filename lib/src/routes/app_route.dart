@@ -3,6 +3,8 @@ import 'package:get/get.dart';
 import '../presentation/screens/screen.dart';
 import '../presentation/screens/mis_pagos_screen/mis_pagos_screen.dart';
 import '../presentation/screens/admin_dashboard_screen/admin_dashboard_screen.dart';
+import '../presentation/views/eventos_views/eventos_view.dart';
+import '../presentation/views/eventos_views/eventos_programados_view.dart';
 
 class AppRoute {
   /* static Future<bool> _seenOnboarding() async {
@@ -37,5 +39,7 @@ class AppRoute {
     ),
     GetPage(name: '/mis-pagos', page: () => const MisPagosScreen()),
     GetPage(name: '/admin-dashboard', page: () => const AdminDashboardScreen()),
+    GetPage(name: '/eventos', page: () => const EventosView()),
+    GetPage(name: '/eventos-programados', page: () => const EventosProgramadosView()),
   ];
 }

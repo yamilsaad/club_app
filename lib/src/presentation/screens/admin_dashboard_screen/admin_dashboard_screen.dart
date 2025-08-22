@@ -1,4 +1,4 @@
-// ignore_for_file: unused_element, unnecessary_to_list_in_spreads
+// ignore_for_file: unused_element, unnecessary_to_list_in_spreads, avoid_print
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
