@@ -19,6 +19,9 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
   final emailController = TextEditingController();
   final dniController = TextEditingController();
   final telefonoController = TextEditingController();
+  final direccionController = TextEditingController();
+  final oficioController = TextEditingController();
+  final numeroSocioController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   
@@ -80,11 +83,18 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
     setState(() => _isLoading = true);
     
     try {
-      // TODO: Implementar registro en AuthController
-      // bool success = await authController.registerUser(...);
-      
-      // Simulación de registro exitoso
-      await Future.delayed(const Duration(seconds: 2));
+      await authController.registerUser(
+        nombre: nombreController.text.trim(),
+        apellido: apellidoController.text.trim(),
+        dni: dniController.text.trim(),
+        domicilio: direccionController.text.trim(),
+        oficio: oficioController.text.trim(),
+        numeroSocio: numeroSocioController.text.trim(),
+        email: emailController.text.trim(),
+        telefono: telefonoController.text.trim(),
+        rol: 'socio', // Por defecto todos los registros son socios
+        password: passwordController.text,
+      );
       
       Get.snackbar(
         'Éxito',
@@ -320,6 +330,61 @@ class _RegisterScreenState extends State<RegisterScreen> with TickerProviderStat
             labelText: 'Teléfono',
             prefixIcon: Icon(Icons.phone_outlined),
             hintText: '+54 9 11 1234-5678',
+          ),
+        ),
+        
+        const SizedBox(height: 20),
+        
+        // Dirección
+        TextFormField(
+          controller: direccionController,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'La dirección es requerida';
+            }
+            return null;
+          },
+          decoration: const InputDecoration(
+            labelText: 'Dirección',
+            prefixIcon: Icon(Icons.location_on_outlined),
+            hintText: 'Calle, número, ciudad',
+          ),
+        ),
+        
+        const SizedBox(height: 20),
+        
+        // Oficio
+        TextFormField(
+          controller: oficioController,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'El oficio es requerido';
+            }
+            return null;
+          },
+          decoration: const InputDecoration(
+            labelText: 'Oficio/Profesión',
+            prefixIcon: Icon(Icons.work_outlined),
+            hintText: 'Ej: Empleado, Comerciante, Estudiante',
+          ),
+        ),
+        
+        const SizedBox(height: 20),
+        
+        // Número de Socio
+        TextFormField(
+          controller: numeroSocioController,
+          keyboardType: TextInputType.number,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'El número de socio es requerido';
+            }
+            return null;
+          },
+          decoration: const InputDecoration(
+            labelText: 'Número de Socio',
+            prefixIcon: Icon(Icons.confirmation_number_outlined),
+            hintText: 'Ej: 001, 002, 003',
           ),
         ),
         

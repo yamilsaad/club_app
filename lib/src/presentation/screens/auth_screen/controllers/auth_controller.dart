@@ -62,6 +62,11 @@ class AuthController extends GetxController {
     required String password,
   }) async {
     try {
+      // Guardar el usuario actual (admin) antes de crear el nuevo
+      final adminUser = currentUser.value;
+      final adminEmail = adminUser?.email;
+      
+      // Crear la cuenta en Firebase Auth
       UserCredential cred = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -69,7 +74,7 @@ class AuthController extends GetxController {
 
       String uid = cred.user!.uid;
 
-      // 🚀 Nuevo: agregamos numeroSocio y estado_socio
+      // Crear el modelo del socio
       SocioModel newSocio = SocioModel(
         idUsuario: uid,
         nombre: nombre,
@@ -80,14 +85,41 @@ class AuthController extends GetxController {
         direccion: domicilio,
         rol: rol,
         fechaCreacion: DateTime.now(),
-        numeroSocio: numeroSocio, // <-- NUEVO
-        estadoSocio: true, // <-- NUEVO, por defecto activo
-        oficio: oficio, // <-- no olvidemos oficio
+        numeroSocio: numeroSocio,
+        estadoSocio: true,
+        oficio: oficio,
       );
 
-      await _firestore.collection("usuarios").doc(uid).set(newSocio.toMap());
+      // Guardar en Firestore (incluyendo la contraseña para poder restaurar sesión)
+      final socioData = newSocio.toMap();
+      socioData['password'] = password; // Agregar contraseña
+      await _firestore.collection("usuarios").doc(uid).set(socioData);
 
-      currentUser.value = newSocio; // Actualizar el usuario logueado
+      // Cerrar sesión del nuevo usuario creado
+      await _auth.signOut();
+
+      // Restaurar la sesión del admin usando su email original
+      if (adminEmail != null) {
+        // Buscar la contraseña del admin en Firestore
+        final adminDoc = await _firestore
+            .collection("usuarios")
+            .where("email", isEqualTo: adminEmail)
+            .where("rol", isEqualTo: "admin")
+            .get();
+        
+        if (adminDoc.docs.isNotEmpty) {
+          final adminData = adminDoc.docs.first.data();
+          final adminPassword = adminData['password'] ?? '';
+          
+          if (adminPassword.isNotEmpty) {
+            await _auth.signInWithEmailAndPassword(
+              email: adminEmail,
+              password: adminPassword,
+            );
+          }
+        }
+      }
+
       Get.snackbar("Éxito", "Usuario registrado correctamente");
     } catch (e) {
       Get.snackbar("Error en registro", e.toString());

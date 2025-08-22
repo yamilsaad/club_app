@@ -151,21 +151,6 @@ class DrawerWidget extends StatelessWidget {
           _buildSectionTitle("Menú Principal"),
           const SizedBox(height: 12),
           _buildMenuItem(
-            icon: FontAwesomeIcons.houseChimney,
-            title: "Inicio",
-            subtitle: "Vista principal de la aplicación",
-            onTap: () => Get.back(),
-          ),
-          _buildMenuItem(
-            icon: FontAwesomeIcons.calendar,
-            title: "Eventos",
-            subtitle: "Ver eventos y actividades",
-            onTap: () {
-              Get.back();
-              // Aquí puedes agregar navegación a eventos
-            },
-          ),
-          _buildMenuItem(
             icon: FontAwesomeIcons.creditCard,
             title: "Mis Pagos",
             subtitle: "Historial y estado de cuotas",
@@ -272,15 +257,6 @@ class DrawerWidget extends StatelessWidget {
         children: [
           _buildSectionTitle("Cuenta"),
           const SizedBox(height: 12),
-          _buildMenuItem(
-            icon: FontAwesomeIcons.gear,
-            title: "Configuración",
-            subtitle: "Ajustes de la aplicación",
-            onTap: () {
-              Get.back();
-              // Aquí puedes agregar navegación a configuración
-            },
-          ),
           Container(
             margin: const EdgeInsets.only(bottom: 8),
             decoration: BoxDecoration(

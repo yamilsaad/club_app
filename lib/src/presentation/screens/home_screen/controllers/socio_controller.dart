@@ -1,5 +1,6 @@
 // lib/controllers/socio_controller.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 //Importaciones de archivos necesarios
 import '../../../../data/models/model.dart';
@@ -85,6 +86,59 @@ class SocioController extends GetxController {
       Get.snackbar("Éxito", "Socio eliminado");
     } catch (e) {
       Get.snackbar("Error", e.toString());
+    }
+  }
+
+  /// ===========================
+  /// Actualizar un socio (alias para updateSocio)
+  /// ===========================
+  Future<bool> actualizarSocio(SocioModel socio) async {
+    try {
+      await updateSocio(socio);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// ===========================
+  /// Eliminar un socio (alias para deleteSocio)
+  /// ===========================
+  Future<bool> eliminarSocio(String idUsuario) async {
+    try {
+      await deleteSocio(idUsuario);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// ===========================
+  /// Cambiar estado del socio (activo/inactivo)
+  /// ===========================
+  Future<bool> actualizarEstadoSocio(String idUsuario, bool nuevoEstado) async {
+    try {
+      await _firestore
+          .collection('usuarios')
+          .doc(idUsuario)
+          .update({'estado_socio': nuevoEstado});
+      
+      // Actualizar en la lista local
+      int index = sociosList.indexWhere((s) => s.idUsuario == idUsuario);
+      if (index != -1) {
+        sociosList[index] = sociosList[index].copyWith(estadoSocio: nuevoEstado);
+      }
+      
+      Get.snackbar(
+        "Éxito", 
+        "Estado del socio actualizado correctamente",
+        backgroundColor: nuevoEstado ? Colors.green : Colors.orange,
+        colorText: Colors.white,
+      );
+      return true;
+    } catch (e) {
+      Get.snackbar("Error", "No se pudo actualizar el estado: $e");
+      return false;
     }
   }
 }

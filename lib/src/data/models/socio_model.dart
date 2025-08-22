@@ -43,7 +43,9 @@ class SocioModel {
       numeroSocio: map["numeroSocio"] ?? "",
       estadoSocio: map["estado_socio"] ?? true,
       oficio: map["oficio"] ?? "",
-      fechaCreacion: (map['fechaCreacion'] as Timestamp).toDate(),
+      fechaCreacion: map['fechaCreacion'] != null 
+          ? (map['fechaCreacion'] as Timestamp).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -63,5 +65,36 @@ class SocioModel {
       "oficio": oficio,
       'fechaCreacion': fechaCreacion,
     };
+  }
+
+  /// Crear una copia del modelo con campos modificados
+  SocioModel copyWith({
+    String? idUsuario,
+    String? nombre,
+    String? apellido,
+    String? email,
+    String? dni,
+    String? telefono,
+    String? direccion,
+    String? rol,
+    DateTime? fechaCreacion,
+    String? numeroSocio,
+    bool? estadoSocio,
+    String? oficio,
+  }) {
+    return SocioModel(
+      idUsuario: idUsuario ?? this.idUsuario,
+      nombre: nombre ?? this.nombre,
+      apellido: apellido ?? this.apellido,
+      email: email ?? this.email,
+      dni: dni ?? this.dni,
+      telefono: telefono ?? this.telefono,
+      direccion: direccion ?? this.direccion,
+      rol: rol ?? this.rol,
+      fechaCreacion: fechaCreacion ?? this.fechaCreacion,
+      numeroSocio: numeroSocio ?? this.numeroSocio,
+      estadoSocio: estadoSocio ?? this.estadoSocio,
+      oficio: oficio ?? this.oficio,
+    );
   }
 }

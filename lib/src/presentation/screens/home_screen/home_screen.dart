@@ -48,7 +48,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       const InicioView(),
       const EventosSociosView(),
       if (user?.rol == "admin") const AdminView(),
-      const SettingView(),
+      // Aquí agregamos la pantalla de beneficios
+      Container(), // Placeholder para beneficios (se navega con Get.toNamed)
+      // const SettingView(), // Comentado temporalmente
     ];
 
     _navItems = [
@@ -69,10 +71,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           'label': 'Admin',
         },
       {
-        'icon': FontAwesomeIcons.gear,
-        'activeIcon': FontAwesomeIcons.gears,
-        'label': 'Ajustes',
+        'icon': FontAwesomeIcons.gift,
+        'activeIcon': FontAwesomeIcons.gifts,
+        'label': 'Beneficios',
       },
+      // {
+      //   'icon': FontAwesomeIcons.gear,
+      //   'activeIcon': FontAwesomeIcons.gears,
+      //   'label': 'Ajustes',
+      // }, // Comentado temporalmente
     ];
   }
 
@@ -84,6 +91,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   void _onItemTapped(int index) {
     if (index != _selectedIndex) {
+      // Si es el tab de Beneficios, navegar en lugar de cambiar de tab
+      final user = authController.currentUser.value;
+      final beneficiosIndex = user?.rol == "admin" ? 3 : 2; // Índice de beneficios dependiendo del rol
+      
+      if (index == beneficiosIndex) {
+        Get.toNamed('/beneficios');
+        return;
+      }
+      
       setState(() {
         _selectedIndex = index;
       });
@@ -99,8 +115,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       final user = authController.currentUser.value;
 
       // Si el rol cambió y la cantidad de tabs cambió, reseteamos index
-      if (user?.rol != "admin" && _selectedIndex >= 2) {
-        _selectedIndex = 1; // Evita que quede en un índice inválido
+      if (user?.rol != "admin" && _selectedIndex >= _navItems.length) {
+        _selectedIndex = 0; // Evita que quede en un índice inválido
       }
 
       // Reconstruir vistas si es necesario
@@ -134,64 +150,94 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           height: 70,
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           child: Row(
-            children: _navItems.asMap().entries.map((entry) {
-              final index = entry.key;
-              final item = entry.value as Map<String, dynamic>;
-              final isSelected = index == _selectedIndex;
+            children: [
+              // Todos los tabs en una sola fila
+              ..._navItems.asMap().entries.map((entry) {
+                final index = entry.key;
+                final item = entry.value as Map<String, dynamic>;
+                final isSelected = index == _selectedIndex;
+                final isBeneficios = item['label'] == 'Beneficios';
 
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => _onItemTapped(index),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: isSelected
-                          ? AppTheme.primaryColor.withOpacity(0.1)
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        FaIcon(
-                          isSelected
-                              ? item['activeIcon'] as IconData
-                              : item['icon'] as IconData,
-                          color: isSelected
-                              ? AppTheme.primaryColor
-                              : AppTheme.textSecondaryColor,
-                          size: 20,
-                        ),
-                        const SizedBox(height: 4),
-                        Flexible(
-                          child: Text(
-                            item['label'] as String,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: isSelected
-                                  ? FontWeight.w600
-                                  : FontWeight.w400,
+                return Expanded(
+                  child: GestureDetector(
+                    onTap: () => _onItemTapped(index),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        // Si es beneficios, usar el estilo especial
+                        color: isBeneficios 
+                            ? Colors.transparent
+                            : (isSelected
+                                ? AppTheme.primaryColor.withOpacity(0.1)
+                                : Colors.transparent),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Si es beneficios, usar el estilo especial del botón
+                          if (isBeneficios)
+                            Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                gradient: AppTheme.accentGradient,
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: AppTheme.accentColor.withOpacity(0.3),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Icons.card_giftcard,
+                                color: Colors.white,
+                                size: 16,
+                              ),
+                            )
+                          else
+                            FaIcon(
+                              isSelected
+                                  ? item['activeIcon'] as IconData
+                                  : item['icon'] as IconData,
                               color: isSelected
                                   ? AppTheme.primaryColor
                                   : AppTheme.textSecondaryColor,
+                              size: 20,
                             ),
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                            maxLines: 1,
+                          const SizedBox(height: 4),
+                          Flexible(
+                            child: Text(
+                              item['label'] as String,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: isSelected
+                                    ? FontWeight.w600
+                                    : FontWeight.w400,
+                                color: isSelected
+                                    ? AppTheme.primaryColor
+                                    : AppTheme.textSecondaryColor,
+                              ),
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              );
-            }).toList(),
+                );
+              }).toList(),
+            ],
           ),
         ),
       ),

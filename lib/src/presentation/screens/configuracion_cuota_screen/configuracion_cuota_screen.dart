@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:socio_app/src/presentation/screens/configuracion_cuota_screen/controllers/configuracion_cuota_controller.dart';
 import 'package:socio_app/src/presentation/screens/configuracion_cuota_screen/controllers/pago_cuota_controller.dart';
 import '../../../data/models/model.dart';
+import '../../../config/themes/app_theme.dart';
 
 class ConfiguracionCuotaScreen extends StatefulWidget {
   const ConfiguracionCuotaScreen({super.key});
@@ -165,19 +166,47 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
     Color color,
     IconData icon,
   ) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 40),
-        const SizedBox(height: 8),
-        Text(
-          "$title: $count",
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: color,
-          ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+          width: 1,
         ),
-      ],
+      ),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 32),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            count.toString(),
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: color,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            title,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+              color: color.withOpacity(0.8),
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
     );
   }
 
@@ -214,7 +243,19 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Configuración de cuotas")),
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        title: const Text(
+          "Configurar Cuota",
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimaryColor,
+          ),
+        ),
+        backgroundColor: AppTheme.surfaceColor,
+        elevation: 0,
+        iconTheme: IconThemeData(color: AppTheme.primaryColor),
+      ),
       body: Obx(() {
         return ListView(
           padding: const EdgeInsets.all(16),
@@ -224,14 +265,50 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
             // ====================
             if (controller.cuotas.isEmpty)
               Card(
+                elevation: 4.0,
                 margin: const EdgeInsets.symmetric(vertical: 8),
-                color: Colors.yellow.shade100,
-                child: const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    "Aún no se ha creado ninguna cuota. Por favor, registre una nueva cuota mensual.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.orange.shade50,
+                        Colors.orange.shade100,
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.account_balance_wallet_outlined,
+                          size: 48,
+                          color: Colors.orange.shade700,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          "No hay cuotas configuradas",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange.shade800,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Configure la primera cuota mensual para comenzar",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.orange.shade700,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -241,64 +318,89 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
             // ====================
             if (controller.cuotas.isNotEmpty)
               Card(
+                elevation: 4.0,
                 margin: const EdgeInsets.symmetric(vertical: 8),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        "Resumen de cuotas:",
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        AppTheme.surfaceColor,
+                        AppTheme.surfaceColor.withOpacity(0.8),
+                      ],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.analytics,
+                              color: AppTheme.primaryColor,
+                              size: 24,
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              "Resumen de Cuotas",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.textPrimaryColor,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildResumenItem(
-                              "Vigentes",
-                              controller.cuotas
-                                  .where(
-                                    (c) =>
-                                        !_esCuotaVencida(c.fechaVencimiento) &&
-                                        !_esCuotaPorVencer(c.fechaVencimiento),
-                                  )
-                                  .length,
-                              Colors.green,
-                              Icons.check_circle,
+                        const SizedBox(height: 20),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildResumenItem(
+                                "Vigentes",
+                                controller.cuotas
+                                    .where(
+                                      (c) =>
+                                          !_esCuotaVencida(c.fechaVencimiento) &&
+                                          !_esCuotaPorVencer(c.fechaVencimiento),
+                                    )
+                                    .length,
+                                Colors.green,
+                                Icons.check_circle,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: _buildResumenItem(
-                              "Por vencer",
-                              controller.cuotas
-                                  .where(
-                                    (c) =>
-                                        _esCuotaPorVencer(c.fechaVencimiento),
-                                  )
-                                  .length,
-                              Colors.orange,
-                              Icons.schedule,
+                            Expanded(
+                              child: _buildResumenItem(
+                                "Por vencer",
+                                controller.cuotas
+                                    .where(
+                                      (c) =>
+                                          _esCuotaPorVencer(c.fechaVencimiento),
+                                    )
+                                    .length,
+                                Colors.orange,
+                                Icons.schedule,
+                              ),
                             ),
-                          ),
-                          Expanded(
-                            child: _buildResumenItem(
-                              "Vencidas",
-                              controller.cuotas
-                                  .where(
-                                    (c) => _esCuotaVencida(c.fechaVencimiento),
-                                  )
-                                  .length,
-                              Colors.red,
-                              Icons.warning,
+                            Expanded(
+                              child: _buildResumenItem(
+                                "Vencidas",
+                                controller.cuotas
+                                    .where(
+                                      (c) => _esCuotaVencida(c.fechaVencimiento),
+                                    )
+                                    .length,
+                                Colors.red,
+                                Icons.warning,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -308,18 +410,44 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
             // ====================
             if (controller.cuotas.isNotEmpty)
               Card(
+                elevation: 4.0,
                 margin: const EdgeInsets.symmetric(vertical: 8),
                 child: ExpansionTile(
                   initiallyExpanded: false,
-                  title: const Text(
-                    "Cuotas existentes",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.list_alt,
+                        color: AppTheme.primaryColor,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Cuotas Existentes",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimaryColor,
+                        ),
+                      ),
+                    ],
                   ),
-                  subtitle: Text(
-                    "${controller.cuotas.length} cuota${controller.cuotas.length == 1 ? '' : 's'} configurada${controller.cuotas.length == 1 ? '' : 's'}",
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                  subtitle: Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppTheme.primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      "${controller.cuotas.length} cuota${controller.cuotas.length == 1 ? '' : 's'} configurada${controller.cuotas.length == 1 ? '' : 's'}",
+                      style: TextStyle(
+                        color: AppTheme.primaryColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
-                  leading: const Icon(Icons.list_alt),
                   children: [
                     ...controller.cuotas.map(
                       (cuota) => ListTile(
@@ -632,13 +760,40 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
             // Formulario para agregar nueva cuota
             // ====================
             Card(
-              elevation: 4,
+              elevation: 4.0,
               margin: const EdgeInsets.symmetric(vertical: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      AppTheme.accentColor.withOpacity(0.05),
+                      AppTheme.accentColor.withOpacity(0.1),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: ExpansionTile(
                   initiallyExpanded: true,
-                  title: const Text("Agregar nueva cuota"),
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.add_circle_outline,
+                        color: AppTheme.accentColor,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Agregar Nueva Cuota",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
                   children: [
                     TextField(
                       controller: mesController,
@@ -765,13 +920,53 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
             // ====================
             Card(
               elevation: 4.0,
-              margin: const EdgeInsets.symmetric(vertical: 1.0),
-              child: Padding(
-                padding: const EdgeInsets.all(5.0),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.green.shade50,
+                      Colors.green.shade100,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: ExpansionTile(
-                  title: const Text("Registrar pago de cuota"),
-                  subtitle: const Text(
-                    "Registrar pago de socio o administrador",
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.payment,
+                        color: Colors.green.shade700,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Registrar Pago de Cuota",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  subtitle: Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade200,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      "Registrar pago de socio o administrador",
+                      style: TextStyle(
+                        color: Colors.green.shade800,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ),
                   children: [
                     // Buscador de socio por DNI
@@ -1136,12 +1331,54 @@ class _ConfiguracionCuotaScreenState extends State<ConfiguracionCuotaScreen> {
             // ====================
             Card(
               elevation: 4.0,
-              margin: const EdgeInsets.symmetric(vertical: 1.0),
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.symmetric(vertical: 8),
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.blue.shade50,
+                      Colors.blue.shade100,
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: ExpansionTile(
-                  title: const Text("Historial de pagos de cuotas"),
-                  subtitle: const Text("Ver todos los pagos registrados"),
+                  title: Row(
+                    children: [
+                      Icon(
+                        Icons.history,
+                        color: Colors.blue.shade700,
+                        size: 24,
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        "Historial de Pagos",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.textPrimaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  subtitle: Container(
+                    margin: const EdgeInsets.only(top: 4),
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.shade200,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Text(
+                      "Ver todos los pagos registrados",
+                      style: TextStyle(
+                        color: Colors.blue.shade800,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
                   children: [
                     Obx(() {
                       if (pagoController.pagos.isEmpty) {
